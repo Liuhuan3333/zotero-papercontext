@@ -1,0 +1,55 @@
+<vbox xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:html="http://www.w3.org/1999/xhtml" onload="Zotero_Preferences.getScope('contextleaf-preferences').ContextLeafPreferences.init(window)">
+  <html:div class="cl-prefs">
+    <html:p class="cl-intro">选服务、填密钥，划词即可翻译。</html:p>
+    <html:section>
+      <html:h2>模型服务</html:h2>
+      <html:label for="cl-provider">提供商</html:label>
+      <html:select id="cl-provider" aria-label="模型提供商"></html:select>
+      <html:div id="cl-connection-card" class="cl-connection-card" role="status" aria-live="polite">
+        <html:strong id="cl-provider-state"></html:strong>
+        <html:p id="cl-current-model"></html:p>
+        <html:p id="cl-last-check" class="cl-muted"></html:p>
+        <html:code id="cl-endpoint"></html:code>
+      </html:div>
+      <html:p id="cl-provider-hint" class="cl-muted"></html:p>
+      <html:p><html:a id="cl-provider-help" href="#">查看当前提供商的官方接入说明</html:a></html:p>
+      <html:label for="cl-api-key">API Key</html:label>
+      <html:input id="cl-api-key" type="password" autocomplete="off" placeholder="输入所选提供商的 API Key" />
+      <html:p id="cl-key-state" class="cl-muted"></html:p>
+      <html:div class="cl-pref-actions">
+        <html:button id="cl-save-key" type="button">保存密钥</html:button>
+        <html:button id="cl-test" type="button">检查连接</html:button>
+        <html:button id="cl-delete-key" type="button">删除此服务密钥</html:button>
+      </html:div>
+      <html:p class="cl-muted">检查连接会发送一条极短模型请求，产生少量用量。不会后台轮询。“已配置”表示已保存 Key，“上次验证成功”是历史检查结果，不代表实时在线。</html:p>
+      <html:p id="cl-status" role="status" aria-live="polite"></html:p>
+    </html:section>
+    <html:section>
+      <html:h2>默认就是省 Token 模式</html:h2>
+      <html:ul>
+        <html:li>划词后自动在选区旁显示中文译文，可在浮窗用 A−／A＋调字号。</html:li>
+        <html:li>短词附带所在句，短句附带附近段落，长选区减少重复上下文。</html:li>
+        <html:li>只发送相关术语；重复选区使用本地缓存；预设模型默认关闭思考模式。</html:li>
+        <html:li>有歧义时，再点击“更多上下文重译”。</html:li>
+      </html:ul>
+      <html:p class="cl-muted">选中文字、必要上下文、论文标题和相关术语会发送至当前选中的提供商。论文术语和译文缓存仅保存在本机，不修改文献库；各服务的密钥不会混用。</html:p>
+    </html:section>
+    <html:details>
+      <html:summary>高级设置（通常无需修改）</html:summary>
+      <html:label for="cl-model">当前服务的模型名称</html:label>
+      <html:input id="cl-model" type="text" />
+      <html:div id="cl-workspace-row" hidden="true">
+        <html:label for="cl-workspace">通义千问业务空间 ID（仅专用接口需要）</html:label>
+        <html:input id="cl-workspace" type="text" placeholder="仅填写 Workspace ID，不填写网址" />
+        <html:p class="cl-muted">留空使用百炼中国区通用接口；填写后自动生成北京地域的业务空间专用接口。请使用对应地域和业务空间的 Key。</html:p>
+      </html:div>
+      <html:p class="cl-muted">模型必须已在你的账号开通；火山方舟也可填写 ep- 接入点 ID。接口由插件预填，不支持任意中转地址或 Coding Plan 专用接口。</html:p>
+      <html:label class="cl-check"><html:input id="cl-enabled" type="checkbox" /> 开启自动划词翻译</html:label>
+      <html:div class="cl-pref-actions">
+        <html:button id="cl-save-settings" type="button">保存高级设置</html:button>
+        <html:button id="cl-clear-cache" type="button">清除译文缓存</html:button>
+      </html:div>
+      <html:p class="cl-muted">清除缓存会保留已纠正的论文术语。术语表在 PDF 划词浮窗中管理。</html:p>
+    </html:details>
+  </html:div>
+</vbox>

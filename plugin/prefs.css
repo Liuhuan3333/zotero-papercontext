@@ -1,0 +1,20 @@
+.cl-prefs{font:14px/1.65 system-ui,sans-serif;max-width:680px;padding:8px 4px 24px;color:var(--fill-primary);}
+.cl-prefs h1{font-size:27px;margin:0 0 5px;}.cl-prefs h2{font-size:17px;margin:0 0 12px;}
+.cl-prefs .cl-intro{opacity:.7;margin:0 0 24px;}
+.cl-prefs section{border:1px solid #80808038;border-radius:10px;padding:20px;margin:16px 0;}
+.cl-prefs label{display:block;margin:10px 0 5px;}
+.cl-prefs input[type=password],.cl-prefs input[type=text]{box-sizing:border-box;width:100%;padding:9px 11px;font:inherit;border:1px solid #80808066;border-radius:6px;background:var(--material-background);color:inherit;}
+.cl-prefs button{appearance:none;-moz-appearance:none;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;height:auto;min-height:36px;max-height:none;margin:0;padding:7px 12px;font:inherit;line-height:1.4;border:1px solid #80808055;border-radius:6px;cursor:pointer;color:inherit;background:var(--material-background);}
+.cl-prefs button:hover{background:#80808022;}.cl-prefs button:disabled{opacity:.5;cursor:wait;}
+.cl-pref-actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0;}
+.cl-prefs .cl-muted{font-size:12px;opacity:.72;}.cl-prefs #cl-status{min-height:1.7em;overflow-wrap:anywhere;color:var(--accent-blue,#327b88);}
+.cl-prefs #cl-status.cl-error{color:#c34c42;}.cl-prefs details{padding:14px 4px;}.cl-prefs summary{cursor:pointer;font-weight:600;}.cl-prefs .cl-check{display:flex;align-items:center;gap:5px;}
+.cl-prefs li{margin:5px 0;}
+.cl-prefs select{box-sizing:border-box;width:100%;min-height:40px;padding:8px 10px;font:inherit;color:inherit;background:var(--material-background);border:1px solid #80808066;border-radius:6px;}
+.cl-prefs .cl-connection-card{padding:13px 15px;margin:16px 0;border:1px solid #80808044;border-left:4px solid #808080;border-radius:7px;background:#8080800b;}
+.cl-prefs .cl-connection-card[data-tone=success]{border-left-color:#3e9d65;}
+.cl-prefs .cl-connection-card[data-tone=waiting]{border-left-color:#b88a23;}
+.cl-prefs .cl-connection-card[data-tone=error]{border-left-color:#c34c42;}
+.cl-prefs .cl-connection-card p{margin:5px 0;}
+.cl-prefs .cl-connection-card code{display:block;font:12px/1.65 ui-monospace,monospace;overflow-wrap:anywhere;opacity:.8;}
+.cl-prefs [hidden]{display:none!important;}

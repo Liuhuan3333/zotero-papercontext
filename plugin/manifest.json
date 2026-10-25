@@ -1,0 +1,16 @@
+{
+  "manifest_version": 2,
+  "name": "研译 PaperContext",
+  "version": "0.2.1",
+  "description": "面向科研论文阅读的上下文划词翻译：论文术语表、术语纠正、按需上下文、多模型服务和本地缓存。",
+  "author": "Liuhuan3333",
+  "applications": {
+    "zotero": {
+      "id": "contextleaf@local.tools",
+      "strict_min_version": "10.0",
+      "strict_max_version": "10.*",
+      "update_url": "https://contextleaf.invalid/updates.json"
+    }
+  },
+  "homepage_url": "https://github.com/Liuhuan3333/zotero-papercontext"
+}

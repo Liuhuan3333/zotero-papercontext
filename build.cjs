@@ -1,0 +1,12 @@
+const fs=require('node:fs'),path=require('node:path'),cp=require('node:child_process'),crypto=require('node:crypto');
+const root=__dirname,plugin=path.join(root,'plugin');
+const manifest=JSON.parse(fs.readFileSync(path.join(plugin,'manifest.json'),'utf8'));
+if(!/^\d+\.\d+\.\d+$/.test(manifest.version))throw new Error('Expected a three-part release version');
+for(const f of fs.readdirSync(plugin).filter(f=>f.endsWith('.js')))cp.execFileSync(process.execPath,['--check',path.join(plugin,f)]);
+const dist=path.join(root,'dist');fs.mkdirSync(dist,{recursive:true});
+const name=`papercontext-${manifest.version}.xpi`,target=path.join(dist,name);
+fs.rmSync(target,{force:true});
+cp.execFileSync('zip',['-q','-X',target,...fs.readdirSync(plugin).sort()],{cwd:plugin});
+const digest=crypto.createHash('sha256').update(fs.readFileSync(target)).digest('hex');
+fs.writeFileSync(path.join(dist,'SHA256SUMS.txt'),digest+'  '+name+'\n');
+console.log(target);

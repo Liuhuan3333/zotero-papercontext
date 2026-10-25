@@ -1,0 +1,13 @@
+node_modules/
+.env
+.env.*
+!.env.example
+.DS_Store
+*.log
+coverage/
+*.sqlite*
+state.json
+profiles/
+profile/
+work/
+*.zip
