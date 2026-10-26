@@ -7,6 +7,7 @@
 - `plugin/core.js`：上下文策略、术语、缓存键和响应处理；可独立测试。
 - `plugin/reader-context.js`：PDF 阅读器文字结构与选区适配。
 - `plugin/providers.js`：官方提供商预设、请求参数和状态判断。
+- `plugin/theme.css`、`plugin/icon.svg`：青绿书签视觉与自动明暗配色。
 - `plugin/prefs.*`：简化配置页面。
 - `tests/`：Node 内置测试，无第三方测试框架。
 - `dist/`：可安装的 XPI 和 SHA256 校验值。

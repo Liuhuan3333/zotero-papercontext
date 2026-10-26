@@ -1,0 +1,66 @@
+/* PaperContext — Teal bookmark. All selectors stay inside the plugin. */
+:where(.cl-prefs,.contextleaf-root,.contextleaf-dock){
+ --pc-bg:#fbfcfa;--pc-surface:#fff;--pc-soft:#edf5ef;--pc-ink:#203b36;--pc-muted:#526b63;
+ --pc-line:#d5e4dc;--pc-accent:#0f766e;--pc-hover:#e0eee7;--pc-warm:#a45129;--pc-warm-bg:#fff0df;
+ --pc-error:#a33943;--pc-error-bg:#fcecee;--pc-shadow:0 10px 32px #183e3220;
+ color:var(--pc-ink);
+}
+:root[data-color-scheme=dark] :where(.cl-prefs,.contextleaf-root,.contextleaf-dock),
+:root[data-theme=dark] :where(.cl-prefs,.contextleaf-root,.contextleaf-dock){
+ --pc-bg:#1d2826;--pc-surface:#24332f;--pc-soft:#2c4039;--pc-ink:#e2eee8;--pc-muted:#adc5ba;
+ --pc-line:#40574d;--pc-accent:#8cdbc7;--pc-hover:#354d43;--pc-warm:#f0bc8c;--pc-warm-bg:#47392d;
+ --pc-error:#ffb1b7;--pc-error-bg:#462e34;--pc-shadow:0 10px 32px #0005;
+}
+@media(prefers-color-scheme:dark){
+ :root:not([data-color-scheme=light]):not([data-theme=light]) :where(.cl-prefs,.contextleaf-root,.contextleaf-dock){
+  --pc-bg:#1d2826;--pc-surface:#24332f;--pc-soft:#2c4039;--pc-ink:#e2eee8;--pc-muted:#adc5ba;
+  --pc-line:#40574d;--pc-accent:#8cdbc7;--pc-hover:#354d43;--pc-warm:#f0bc8c;--pc-warm-bg:#47392d;
+  --pc-error:#ffb1b7;--pc-error-bg:#462e34;--pc-shadow:0 10px 32px #0005;
+ }
+}
+:where(.cl-prefs,.contextleaf-root) button{transition:background-color .14s,border-color .14s,box-shadow .14s;}
+:where(.cl-prefs,.contextleaf-root) :is(button,input,select,summary):focus-visible{outline:2px solid var(--pc-accent);outline-offset:3px;}
+.cl-logo{display:block;width:30px;height:30px;flex:none;}
+.cl-glyph{width:15px;height:15px;display:inline-block;vertical-align:-2px;margin-right:5px;flex:none;pointer-events:none;}
+.contextleaf-root{color:var(--pc-ink);background:var(--pc-surface);border-radius:12px;padding:12px 10px 18px;}
+.contextleaf-root.cl-floating{background:var(--pc-surface);border:1px solid var(--pc-line);border-radius:14px;box-shadow:var(--pc-shadow);}
+.contextleaf-root .cl-header{gap:7px;border-bottom:1px solid var(--pc-line);padding:0 0 10px;margin-bottom:10px;}
+.contextleaf-root .cl-brand{display:flex;align-items:center;gap:8px;flex:1;min-width:78px;}
+.contextleaf-root .cl-header strong{color:var(--pc-accent);font-size:16px;letter-spacing:1px;}
+.contextleaf-root .cl-fonts{display:inline-flex;align-items:center;gap:2px;padding:2px;background:var(--pc-soft);border:1px solid var(--pc-line);border-radius:8px;}
+.contextleaf-root .cl-fonts button{border:0;min-width:26px;padding:2px;}
+.contextleaf-root .cl-font-value{color:var(--pc-muted);}
+.contextleaf-root button{color:var(--pc-ink);background:var(--pc-surface);border:1px solid var(--pc-line);border-radius:7px;padding:4px 7px;}
+.contextleaf-root button:hover{background:var(--pc-hover);border-color:var(--pc-accent);}
+.contextleaf-root button.cl-mode{background:var(--pc-soft);color:var(--pc-accent);font-size:11px;}
+.contextleaf-root button.cl-close{border:0;background:transparent;font-size:18px;}
+.contextleaf-root button.cl-settings{border:0;background:transparent;}
+.contextleaf-root button.cl-connection{color:var(--pc-muted);padding:4px 7px;margin-bottom:11px;border-radius:6px;background:var(--pc-soft);font-size:11px;opacity:1;}
+.contextleaf-root .cl-connection[data-tone=success]{color:var(--pc-accent);}
+.contextleaf-root .cl-connection[data-tone=error]{color:var(--pc-error);background:var(--pc-error-bg);}
+.contextleaf-root .cl-connection[data-tone=waiting]{color:var(--pc-warm);background:var(--pc-warm-bg);}
+.contextleaf-root .cl-output{color:var(--pc-ink);line-height:1.8;}
+.contextleaf-root .cl-meta{color:var(--pc-muted);font-size:11px;opacity:1;margin-top:12px;}
+.contextleaf-root[data-result=term] .cl-meta,.contextleaf-root[data-result=cache] .cl-meta{display:table;border-radius:6px;padding:4px 7px;background:var(--pc-soft);color:var(--pc-accent);}
+.contextleaf-root[data-result=error] .cl-output{color:var(--pc-error);}
+.contextleaf-root .cl-actions{padding-top:10px;border-top:1px solid var(--pc-line);gap:6px;margin-top:12px;}
+.contextleaf-root .cl-editor{border-top-color:var(--pc-line);padding-top:12px;}
+.contextleaf-root input{background:var(--pc-bg);color:var(--pc-ink);border-color:var(--pc-line);border-radius:7px;}
+.contextleaf-root .cl-saved{color:var(--pc-accent);animation:pc-saved .4s ease-out;}
+.contextleaf-dock{background:var(--pc-bg);border-inline-start-color:var(--pc-line);padding:14px;}
+.contextleaf-dock .contextleaf-root{background:transparent;border-radius:0;}
+.contextleaf-dock .cl-header{padding-bottom:14px;}
+.contextleaf-dock .cl-source{background:var(--pc-soft);color:var(--pc-muted);opacity:1;border:1px solid var(--pc-line);border-radius:9px;padding:10px 12px;margin-bottom:16px;line-height:1.7;}
+.contextleaf-dock .cl-source::before{content:'原文';display:block;font-size:10px;font-weight:600;letter-spacing:2px;margin-bottom:5px;color:var(--pc-accent);}
+.contextleaf-dock .cl-output::before{content:'译文';display:block;font-size:10px;font-weight:600;letter-spacing:2px;margin-bottom:8px;color:var(--pc-accent);}
+.contextleaf-dock>button.cl-resize::after{content:'';position:absolute;left:2px;top:42%;height:38px;width:3px;border-radius:3px;background:var(--pc-line);}
+.contextleaf-dock>button.cl-resize:hover{background:var(--pc-hover);}
+.contextleaf-root button.cl-resize{border:0;background:repeating-linear-gradient(135deg,transparent 0 4px,var(--pc-accent) 4px 5px);opacity:.45;}
+.contextleaf-root .cl-loading{display:inline-flex;align-items:center;gap:4px;margin-left:9px;}
+.contextleaf-root .cl-loading i{display:block;width:4px;height:4px;background:var(--pc-accent);border-radius:50%;animation:pc-dot 1s ease-in-out infinite;}
+.contextleaf-root .cl-loading i:nth-child(2){animation-delay:.14s;}.contextleaf-root .cl-loading i:nth-child(3){animation-delay:.28s;}
+@keyframes pc-dot{0%,70%,100%{opacity:.3;transform:translateY(0);}35%{opacity:1;transform:translateY(-3px);}}
+@keyframes pc-saved{from{opacity:.3;}to{opacity:1;}}
+@media(prefers-reduced-motion:reduce){.contextleaf-root .cl-loading i,.contextleaf-root .cl-saved{animation:none;}:where(.cl-prefs,.contextleaf-root) button{transition:none;}}
+.contextleaf-root button.cl-mode::before{content:'';display:inline-block;width:10px;height:12px;margin-right:5px;background:currentColor;clip-path:polygon(10% 0,90% 0,90% 100%,50% 72%,10% 100%);}
+.contextleaf-root button.cl-mode[aria-pressed=true]::before{clip-path:polygon(0 0,100% 0,100% 100%,0 100%,0 18%,18% 18%,18% 82%,82% 82%,82% 18%,0 18%);}

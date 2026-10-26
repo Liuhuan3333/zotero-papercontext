@@ -1,7 +1,7 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
 async function load(saved={}){
  const prefs=new Map(Object.entries(saved));
- const context=vm.createContext({console,URL,setTimeout,clearTimeout,Map,Set,JSON,Date,PathUtils:{join:(...p)=>p.join('/')},IOUtils:{makeDirectory:async()=>{},exists:async()=>false},ChromeUtils:{importESModule:()=>({AddonManager:{getAddonByID:async()=>null}})},Zotero:{initializationPromise:Promise.resolve(),Profile:{dir:'/isolated'},Prefs:{get:k=>prefs.get(k),set:(k,v)=>prefs.set(k,v)},PreferencePanes:{register:async()=>{}},Reader:{registerEventListener:()=>{}},logError:()=>{}},Services:{scriptloader:{loadSubScript:uri=>vm.runInContext(fs.readFileSync(path.join(__dirname,'../plugin',uri),'utf8'),context)}}});
+ const context=vm.createContext({console,URL,setTimeout,clearTimeout,Map,Set,JSON,Date,PathUtils:{join:(...p)=>p.join('/')},IOUtils:{makeDirectory:async()=>{},exists:async()=>false},ChromeUtils:{importESModule:()=>({AddonManager:{getAddonByID:async()=>null}})},Zotero:{File:{getResourceAsync:async uri=>fs.readFileSync(path.join(__dirname,'../plugin',uri),'utf8')},initializationPromise:Promise.resolve(),Profile:{dir:'/isolated'},Prefs:{get:k=>prefs.get(k),set:(k,v)=>prefs.set(k,v)},PreferencePanes:{register:async()=>{}},Reader:{registerEventListener:()=>{}},logError:()=>{}},Services:{scriptloader:{loadSubScript:uri=>vm.runInContext(fs.readFileSync(path.join(__dirname,'../plugin',uri),'utf8'),context)}}});
  vm.runInContext(fs.readFileSync(path.join(__dirname,'../plugin/bootstrap.js'),'utf8'),context);
  await context.startup({id:'contextleaf@local.tools',rootURI:''});
  return {api:context.Zotero.ContextLeaf,prefs};

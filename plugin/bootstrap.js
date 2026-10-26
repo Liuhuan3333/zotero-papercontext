@@ -8,12 +8,14 @@ async function startup({id,rootURI}) {
   Services.scriptloader.loadSubScript(rootURI+'reader-context.js',this);
   Services.scriptloader.loadSubScript(rootURI+'providers.js',this);
   Services.scriptloader.loadSubScript(rootURI+'display.js',this);
+  const themeCSS=await Zotero.File.getResourceAsync(rootURI+'theme.css');
+  const iconData='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(await Zotero.File.getResourceAsync(rootURI+'icon.svg'));
   const D=this.ContextLeafDisplay;
   const C=this.ContextLeafCore;
   const R=this.ContextLeafReaderContext;
   const P=this.ContextLeafProviders;
   ContextLeaf={
-    id,rootURI,store:null,engine:null,cards:new Map(),styles:new Set(),listeners:new Set(),probes:new Map(),pending:new Map(),sequence:0,lastRecord:new Map(),lastWrite:Promise.resolve(),loadError:null,saveError:null,
+    id,rootURI,themeCSS,iconData,store:null,engine:null,cards:new Map(),styles:new Set(),listeners:new Set(),probes:new Map(),pending:new Map(),sequence:0,lastRecord:new Map(),lastWrite:Promise.resolve(),loadError:null,saveError:null,
     dir:PathUtils.join(Zotero.Profile.dir,'contextleaf'),
     pref(name,fallback) { const v=Zotero.Prefs.get('extensions.contextleaf.'+name,true);return v===undefined?fallback:v; },
     providers() { return P.list(); },
@@ -105,7 +107,7 @@ async function startup({id,rootURI}) {
       catch { this.store=new C.Store();this.loadError='本地术语文件无法读取，已暂停翻译以保护原文件。请备份 profile/contextleaf/state.json 后检查。'; }
       this.store.onChange=()=>{this.persist().catch(()=>{});};
       this.engine=new C.Engine(this.store,(body,token,config)=>this.request(body,token,config));
-      await Zotero.PreferencePanes.register({id:'contextleaf-preferences',pluginID:id,src:rootURI+'prefs.xhtml',scripts:[rootURI+'prefs.js'],stylesheets:[rootURI+'prefs.css'],label:'研译'});
+      await Zotero.PreferencePanes.register({id:'contextleaf-preferences',pluginID:id,src:rootURI+'prefs.xhtml',scripts:[rootURI+'prefs.js'],stylesheets:[rootURI+'theme.css',rootURI+'prefs.css'],label:'研译'});
       this.handler=event=>{try{this.popup(event);}catch(error){Zotero.logError(new Error('PaperContext popup: '+error.message));}};
       Zotero.Reader.registerEventListener('renderTextSelectionPopup',this.handler,id);
     },
@@ -178,14 +180,16 @@ async function startup({id,rootURI}) {
       this.addStyle(doc);
       const card=doc.createElement('div');card.className='contextleaf-root';card.lang='zh-CN';
       const header=doc.createElement('div');header.className='cl-header';
-      const name=doc.createElement('strong');name.textContent='研译';header.append(name);
+      const brand=doc.createElement('div');brand.className='cl-brand';
+      const logo=doc.createElement('img');logo.className='cl-logo';logo.src=this.iconData;logo.alt='';
+      const name=doc.createElement('strong');name.textContent='研译';brand.append(logo,name);header.append(brand);
       const smaller=this.button(doc,'A−',()=>this.changeFont(-2));smaller.className='cl-font-minus';smaller.title='缩小译文字号';smaller.setAttribute('aria-label','缩小译文字号');
       const fontValue=doc.createElement('span');fontValue.className='cl-font-value';fontValue.title='当前译文字号（像素）';
       const larger=this.button(doc,'A＋',()=>this.changeFont(2));larger.className='cl-font-plus';larger.title='放大译文字号';larger.setAttribute('aria-label','放大译文字号');
-      header.append(smaller,fontValue,larger);
+      const fonts=doc.createElement('div');fonts.className='cl-fonts';fonts.setAttribute('aria-label','译文字号');fonts.append(smaller,fontValue,larger);header.append(fonts);
       const modeButton=this.button(doc,'固定到侧边',()=>this.setDisplayMode(state.mode==='sidebar'?'popup':'sidebar'));modeButton.className='cl-mode';header.append(modeButton);
-      const settings=this.button(doc,'设置',()=>this.openSettings());header.append(settings);
-      const close=this.button(doc,'×',()=>this.dispose(state));close.setAttribute('aria-label','关闭译文');header.append(close);
+      const settings=this.button(doc,'设置',()=>this.openSettings());settings.className='cl-settings';header.append(settings);
+      const close=this.button(doc,'×',()=>this.dispose(state));close.className='cl-close';close.setAttribute('aria-label','关闭译文');header.append(close);
       const output=doc.createElement('div');output.className='cl-output';output.setAttribute('role','status');output.setAttribute('aria-live','polite');output.textContent='正在准备翻译…';
       const source=doc.createElement('div');source.className='cl-source';source.textContent=selection;source.setAttribute('aria-label','选中的原文');
       const meta=doc.createElement('div');meta.className='cl-meta';
@@ -195,7 +199,7 @@ async function startup({id,rootURI}) {
       state={reader,doc,card,modeButton,output,meta,connection,actions,identity,annotation,selection,signature,token:{cancelled:false},disposed:false};
       D.setup(state,{dismiss:()=>this.dispose(state),width:mode=>this.displayWidth(mode),save:(mode,width)=>this.saveDisplayWidth(mode,width)});
       this.cards.set(reader,state);this.applyFont(state);this.updateConnection(state);
-      actions.append(this.button(doc,'更多上下文重译',()=>this.run(state,true)),this.button(doc,'纠正术语',()=>this.editor(state)),this.button(doc,'论文术语表',()=>this.terms(state)));
+      actions.append(this.action(doc,'更多上下文重译','↗',()=>this.run(state,true)),this.action(doc,'纠正术语','✎',()=>this.editor(state)),this.action(doc,'论文术语表','▤',()=>this.terms(state)));
       card.addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();this.dispose(state);}});
       // Native selection gestures should not consume typing/clicks inside the editor.
       card.addEventListener('pointerdown',e=>e.stopPropagation());
@@ -209,11 +213,17 @@ async function startup({id,rootURI}) {
       const b=doc.createElement('button');b.type='button';b.textContent=text;
       b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();handler();});return b;
     },
+    action(doc,text,symbol,handler) {
+      const button=this.button(doc,text,handler),icon=doc.createElement('span');icon.className='cl-glyph';icon.setAttribute('aria-hidden','true');icon.textContent=symbol;button.prepend(icon);return button;
+    },
     async run(state,expanded) {
       if(state.disposed)return;
       clearTimeout(state.timer);state.token.cancelled=true;state.token.abort?.();
       const token=state.token={cancelled:false};
-      state.output.textContent=expanded?'正在结合更多上下文翻译…':'正在翻译…';state.meta.textContent='';
+      state.card.dataset.result='loading';state.output.setAttribute('aria-busy','true');
+      state.output.textContent=expanded?'正在结合更多上下文翻译':'正在理解论文语境';state.meta.textContent='';
+      const dots=state.doc.createElement('span');dots.className='cl-loading';dots.setAttribute('aria-hidden','true');
+      for(let i=0;i<3;i++)dots.append(state.doc.createElement('i'));state.output.append(dots);
       try {
         if(this.loadError)throw new Error(this.loadError);
         if(state.selection.length>3500)throw new Error('一次最多翻译3500字符，请缩小选区。');
@@ -221,7 +231,7 @@ async function startup({id,rootURI}) {
         if(token.cancelled || state.disposed)return;
         const result=await this.engine.translate({...state.identity,selection:state.selection,context,expanded,model:config.model,provider:config.provider,endpoint:config.endpoint,connection:config},token);
         if(token.cancelled || state.disposed)return;
-        state.output.textContent=result.text;
+        state.card.dataset.result=result.source;state.output.setAttribute('aria-busy','false');state.output.textContent=result.text;
         if(result.source==='term')state.meta.textContent='论文术语表 · 本次未调用 API';
         else if(result.source==='cache')state.meta.textContent='本地缓存 · 本次未调用 API';
         else {
@@ -230,7 +240,7 @@ async function startup({id,rootURI}) {
           if(context.quality!=='paragraph')state.meta.textContent+=' · '+(context.quality==='nearby'?'附近文本上下文':'仅选中文字');
         }
         if(this.saveError)state.meta.textContent+=' · '+this.saveError;
-      } catch(error) { if(!token.cancelled && !state.disposed)state.output.textContent=error.message || '翻译失败，请手动重试。'; }
+      } catch(error) { if(!token.cancelled && !state.disposed){state.card.dataset.result='error';state.output.setAttribute('aria-busy','false');state.output.textContent=error.message || '翻译失败，请手动重试。';} }
     },
     editor(state,source='',target='') {
       state.card.querySelector('.cl-editor')?.remove();
@@ -244,10 +254,12 @@ async function startup({id,rootURI}) {
           if(this.loadError)throw new Error(this.loadError);
           state.token.cancelled=true;state.token.abort?.();clearTimeout(state.timer);
           this.store.setTerm(state.identity.paper,src.value,dst.value);await this.lastWrite;
-          message.textContent='已保存，仅用于当前论文；旧缓存已失效。';
+          message.classList.add('cl-saved');message.textContent='✓ 术语已记住，仅用于当前论文；旧缓存已失效。';
+          state.output.setAttribute('aria-busy','false');
+          if(state.output.querySelector('.cl-loading'))state.output.textContent='术语已保存，可应用术语重新翻译。';
           const exact=this.store.exactTerm(state.identity.paper,state.selection);
-          if(exact){state.output.textContent=exact;state.meta.textContent='已纠正 · 本次未调用 API';}
-          else {state.meta.textContent='术语已保存；点击重译以更新当前句子。';}
+          if(exact){state.card.dataset.result='term';state.output.textContent=exact;state.meta.textContent='已纠正 · 本次未调用 API';}
+          else {state.card.dataset.result='saved';state.meta.textContent='术语已保存；点击重译以更新当前句子。';}
         } catch(error){message.textContent=error.message;}
       };
       box.addEventListener('submit',e=>{e.preventDefault();save();});
@@ -311,6 +323,7 @@ body.contextleaf-docked #split-view{inset-inline-end:var(--cl-dock-width);}
 .contextleaf-root .cl-term{display:flex;gap:5px;align-items:center;margin:6px 0;}
 .contextleaf-root .cl-term span{flex:1;overflow-wrap:anywhere;}
 `;
+      style.textContent+='\n'+this.themeCSS;
       (doc.head || doc.documentElement).append(style);this.styles.add(style);
     },
     async stop() {

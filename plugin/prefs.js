@@ -3,6 +3,7 @@ var ContextLeafPreferences={
   const doc=win.document,$=id=>doc.getElementById(id);
   if(!$('cl-api-key') || $('cl-api-key').dataset.ready)return;
   $('cl-api-key').dataset.ready='true';const api=Zotero.ContextLeaf;
+  $('cl-brand-icon').src=api.iconData;
   const status=(text,error=false)=>{$('cl-status').textContent=text;$('cl-status').classList.toggle('cl-error',error);};
   for(const p of api.providers()){
    const option=doc.createElementNS('http://www.w3.org/1999/xhtml','option');option.value=p.id;option.textContent=p.name;$('cl-provider').append(option);

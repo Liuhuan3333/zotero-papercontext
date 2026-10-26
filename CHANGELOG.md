@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.0
+
+- Introduce the Teal Bookmark identity, a book/bookmark icon and matching light/dark settings, popup and sidebar styles.
+- Group font controls, separate source text, and add labeled action icons, local-result badges and gentle loading/saved feedback.
+- Respect reduced motion; preserve API requests, configuration, display mode and saved widths.
+
 ## 0.3.2
 
 - Clear floating position offsets when switching hosts so a resized result lands inside the fixed sidebar on the first click.

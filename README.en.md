@@ -12,7 +12,9 @@ Works with **Zotero 10**. Standard presets include the API endpoint and a defaul
 
 > Bring your own API key from a supported provider. API usage may cost money, and your account must have access to the selected model. Workspace-specific endpoints and restricted accounts may need additional settings; see [Configuration](docs/CONFIGURATION.md).
 
-[Download the plugin](https://github.com/Liuhuan3333/zotero-papercontext/raw/refs/heads/main/dist/papercontext-0.3.2.xpi) · [Configuration](docs/CONFIGURATION.md) · [Privacy and costs](docs/PRIVACY.md) · [MIT License](LICENSE)
+[Download the plugin](https://github.com/Liuhuan3333/zotero-papercontext/raw/refs/heads/main/dist/papercontext-0.4.0.xpi) · [Configuration](docs/CONFIGURATION.md) · [Privacy and costs](docs/PRIVACY.md) · [MIT License](LICENSE)
+
+![Teal Bookmark design preview (light / dark)](docs/images/teal-bookmark-preview.svg)
 
 ## Four things to know
 
@@ -51,7 +53,7 @@ PaperContext addresses these specific reading needs. It does not promise error-f
 
 ## Quick start — no code required
 
-1. [Download `papercontext-0.3.2.xpi`](https://github.com/Liuhuan3333/zotero-papercontext/raw/refs/heads/main/dist/papercontext-0.3.2.xpi). On a GitHub file page, use **Download raw file** if needed.
+1. [Download `papercontext-0.4.0.xpi`](https://github.com/Liuhuan3333/zotero-papercontext/raw/refs/heads/main/dist/papercontext-0.4.0.xpi). On a GitHub file page, use **Download raw file** if needed.
 2. In Zotero, open **Tools → Plugins → gear menu → Install Plugin From File**, then select the XPI.
 3. Open **Zotero Settings → 研译**, select your provider, enter your API key, and click **Save key** (`保存密钥`). The current plugin interface is in Chinese.
 4. Click **Check connection** (`检查连接`). Open a selectable-text PDF and highlight the text you want to understand.

@@ -1,8 +1,12 @@
 <vbox xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:html="http://www.w3.org/1999/xhtml" onload="Zotero_Preferences.getScope('contextleaf-preferences').ContextLeafPreferences.init(window)">
   <html:div class="cl-prefs">
-    <html:p class="cl-intro">选服务、填密钥，划词即可翻译。</html:p>
+    <html:header class="cl-hero">
+      <html:div class="cl-hero-heading"><html:img id="cl-brand-icon" class="cl-logo" alt="" /><html:div><html:h1>研译 <html:span>PaperContext</html:span></html:h1><html:p>读懂词，也读懂语境。</html:p></html:div></html:div>
+      <html:p class="cl-intro">选服务、填密钥，划词即可翻译。</html:p>
+      <html:div class="cl-chips"><html:span>上下文翻译</html:span><html:span>论文术语</html:span><html:span>按需省 Token</html:span></html:div>
+    </html:header>
     <html:section>
-      <html:h2>模型服务</html:h2>
+      <html:h2><html:span class="cl-step">01</html:span> 连接你的模型</html:h2>
       <html:label for="cl-provider">提供商</html:label>
       <html:select id="cl-provider" aria-label="模型提供商"></html:select>
       <html:div id="cl-connection-card" class="cl-connection-card" role="status" aria-live="polite">
@@ -25,14 +29,14 @@
       <html:p id="cl-status" role="status" aria-live="polite"></html:p>
     </html:section>
     <html:section>
-      <html:h2>翻译显示</html:h2>
+      <html:h2><html:span class="cl-step">02</html:span> 选择阅读方式</html:h2>
       <html:label for="cl-display-mode">显示位置（切换不重新调用 API）</html:label>
       <html:select id="cl-display-mode">
         <html:option value="popup">选区旁浮窗</html:option>
         <html:option value="sidebar">侧边固定翻译框</html:option>
       </html:select>
       <html:p class="cl-muted">也可用翻译框中的“固定到侧边／返回浮窗”随时切换。记住上次选择；侧边模式下继续划词会更新当前译文。</html:p>
-      <html:h2>默认就是省 Token 模式</html:h2>
+      <html:h2 class="cl-tip-title">少发一点，读懂更多</html:h2>
       <html:ul>
         <html:li>划词后自动在选区旁显示中文译文，可在浮窗用 A−／A＋调字号。</html:li>
         <html:li>短词附带所在句，短句附带附近段落，长选区减少重复上下文。</html:li>
