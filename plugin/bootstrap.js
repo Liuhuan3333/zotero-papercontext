@@ -57,6 +57,16 @@ async function startup({id,rootURI}) {
       for(const state of this.cards.values())D.mount(state,mode);
       Zotero.Prefs.set('extensions.contextleaf.displayMode',mode,true);this.notify();
     },
+    displayWidth(mode) {
+      if(!['popup','sidebar'].includes(mode))throw new Error('不支持的显示模式。');
+      const fallback=mode==='popup'?340:360,value=Number(this.pref(mode+'Width',fallback));
+      return Number.isFinite(value)?Math.round(Math.max(240,Math.min(720,value))):fallback;
+    },
+    saveDisplayWidth(mode,width) {
+      if(!['popup','sidebar'].includes(mode) || !Number.isFinite(width))throw new Error('宽度不正确。');
+      Zotero.Prefs.set('extensions.contextleaf.'+mode+'Width',Math.round(Math.max(240,Math.min(720,width))),true);
+      for(const state of this.cards.values())D.applyWidth(state);
+    },
     fontSize() { return C.fontSize(this.pref('fontSize',16)); },
     applyFont(state) {
       const size=this.fontSize();state.card.style.setProperty('--cl-translation-font-size',size+'px');
@@ -183,6 +193,7 @@ async function startup({id,rootURI}) {
       const actions=doc.createElement('div');actions.className='cl-actions';
       card.append(header,connection,source,output,meta,actions);
       state={reader,doc,card,modeButton,output,meta,connection,actions,identity,annotation,selection,signature,token:{cancelled:false},disposed:false};
+      D.setup(state,{width:mode=>this.displayWidth(mode),save:(mode,width)=>this.saveDisplayWidth(mode,width)});
       this.cards.set(reader,state);this.applyFont(state);this.updateConnection(state);
       actions.append(this.button(doc,'更多上下文重译',()=>this.run(state,true)),this.button(doc,'纠正术语',()=>this.editor(state)),this.button(doc,'论文术语表',()=>this.terms(state)));
       card.addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();this.dispose(state);}});
@@ -264,20 +275,25 @@ async function startup({id,rootURI}) {
       if(doc.getElementById('contextleaf-style'))return;
       const style=doc.createElement('style');style.id='contextleaf-style';
       style.textContent=`
-.selection-popup:has(.contextleaf-root){flex-wrap:wrap;max-width:min(410px,calc(100vw - 28px));}
+.selection-popup:has(.contextleaf-root){flex-wrap:wrap;max-width:min(calc(var(--cl-popup-width,340px) + 32px),calc(100vw - 28px));}
 .selection-popup .custom-sections:has(.contextleaf-root){flex-basis:100%;min-width:0;width:100%;}
-.contextleaf-root{box-sizing:border-box;width:340px;max-width:calc(100vw - 54px);padding:10px 5px 3px;font:13px/1.65 system-ui,sans-serif;color:var(--fill-primary,#202b34);white-space:normal;text-align:left;}
+.contextleaf-root{position:relative;box-sizing:border-box;width:340px;max-width:calc(100vw - 54px);padding:10px 5px 3px;font:13px/1.65 system-ui,sans-serif;color:var(--fill-primary,#202b34);white-space:normal;text-align:left;}
 .contextleaf-root *{box-sizing:border-box;}
 .contextleaf-root .cl-header{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:7px;border-bottom:1px solid #80808033;padding-bottom:6px;}
 .contextleaf-root .cl-mode{font-size:11px;}
 .contextleaf-root .cl-source{display:none;}
 body.contextleaf-docked{--cl-dock-width:min(360px,45vw);}
 body.contextleaf-docked #split-view{inset-inline-end:var(--cl-dock-width);}
-.contextleaf-dock{position:fixed;inset-inline-end:0;top:41px;bottom:var(--bottom-placeholder-height,0px);width:var(--cl-dock-width);overflow:auto;background:var(--material-background,#fff);border-inline-start:1px solid #80808044;z-index:40;padding:10px;}
+.contextleaf-dock{box-sizing:border-box;position:fixed;inset-inline-end:0;top:41px;bottom:var(--bottom-placeholder-height,0px);width:var(--cl-dock-width);overflow:auto;background:var(--material-background,#fff);border-inline-start:1px solid #80808044;z-index:40;padding:10px;}
 .contextleaf-dock .contextleaf-root{width:100%;max-width:none;padding:0;}
 .contextleaf-dock .cl-source{display:block;font-size:12px;opacity:.7;max-height:16vh;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;border-bottom:1px solid #80808033;margin-bottom:10px;padding-bottom:8px;}
 .contextleaf-dock .cl-output{max-height:none;}
 .contextleaf-root.cl-floating{position:fixed;z-index:1000;max-height:80vh;overflow:auto;max-width:calc(100vw - 16px);padding:12px;border:1px solid #80808044;border-radius:8px;background:var(--material-background,#fff);box-shadow:0 4px 20px #0003;}
+.cl-resize{touch-action:none;user-select:none;cursor:ew-resize;z-index:1100;}
+.contextleaf-root button.cl-resize{position:absolute;right:0;bottom:0;width:20px;height:16px;min-height:0;padding:0;border:0;border-radius:3px;background:linear-gradient(135deg,transparent 50%,#80808088 52%,transparent 58%,#80808088 62%,transparent 68%);}
+.contextleaf-root[data-mode=popup]{padding-bottom:20px;}
+.contextleaf-dock>button.cl-resize{position:absolute;top:0;bottom:0;left:0;width:8px;border:0;padding:0;background:transparent;}
+.contextleaf-dock>button.cl-resize:hover,.contextleaf-dock>button.cl-resize:focus-visible{background:#327b8880;}
 @media print{.contextleaf-dock,.contextleaf-root.cl-floating{display:none;}body.contextleaf-docked #split-view{inset-inline-end:0;}}
 .contextleaf-root .cl-font-value{font-variant-numeric:tabular-nums;font-size:12px;min-width:16px;text-align:center;}
 .contextleaf-root button:disabled{opacity:.4;cursor:default;}

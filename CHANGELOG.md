@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.1
+
+- Drag the fixed sidebar left edge or popup bottom-right handle to resize.
+- Remember independent widths, clamp to the reader viewport, and keep the current result without extra API calls.
+
 ## 0.3.0
 
 - Add popup/fixed-sidebar switching and remember the display mode across restarts.

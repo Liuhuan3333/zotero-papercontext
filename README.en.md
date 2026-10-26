@@ -12,7 +12,7 @@ Works with **Zotero 10**. Standard presets include the API endpoint and a defaul
 
 > Bring your own API key from a supported provider. API usage may cost money, and your account must have access to the selected model. Workspace-specific endpoints and restricted accounts may need additional settings; see [Configuration](docs/CONFIGURATION.md).
 
-[Download the plugin](https://github.com/Liuhuan3333/zotero-papercontext/raw/refs/heads/main/dist/papercontext-0.3.0.xpi) · [Configuration](docs/CONFIGURATION.md) · [Privacy and costs](docs/PRIVACY.md) · [MIT License](LICENSE)
+[Download the plugin](https://github.com/Liuhuan3333/zotero-papercontext/raw/refs/heads/main/dist/papercontext-0.3.1.xpi) · [Configuration](docs/CONFIGURATION.md) · [Privacy and costs](docs/PRIVACY.md) · [MIT License](LICENSE)
 
 ## Four things to know
 
@@ -51,12 +51,12 @@ PaperContext addresses these specific reading needs. It does not promise error-f
 
 ## Quick start — no code required
 
-1. [Download `papercontext-0.3.0.xpi`](https://github.com/Liuhuan3333/zotero-papercontext/raw/refs/heads/main/dist/papercontext-0.3.0.xpi). On a GitHub file page, use **Download raw file** if needed.
+1. [Download `papercontext-0.3.1.xpi`](https://github.com/Liuhuan3333/zotero-papercontext/raw/refs/heads/main/dist/papercontext-0.3.1.xpi). On a GitHub file page, use **Download raw file** if needed.
 2. In Zotero, open **Tools → Plugins → gear menu → Install Plugin From File**, then select the XPI.
 3. Open **Zotero Settings → 研译**, select your provider, enter your API key, and click **Save key** (`保存密钥`). The current plugin interface is in Chinese.
 4. Click **Check connection** (`检查连接`). Open a selectable-text PDF and highlight the text you want to understand.
 
-Click **Pin to side** (`固定到侧边`) to keep the result on the right. Further selections update the fixed panel; **Back to popup** (`返回浮窗`) restores a floating result. The choice survives restarts and is also available in settings. Switching reuses the same card and any pending request, without extra API usage.
+Click **Pin to side** (`固定到侧边`) to keep the result on the right. Further selections update the fixed panel; **Back to popup** (`返回浮窗`) restores a floating result. Drag the sidebar’s left edge or the popup’s bottom-right handle to resize. Each mode remembers its own width; resizing does not call the API. The choice survives restarts and is also available in settings. Switching reuses the same card and any pending request, without extra API usage.
 
 Updating an existing installation preserves compatible keys, preferences, and paper glossaries. Do not uninstall or delete your data before upgrading.
 

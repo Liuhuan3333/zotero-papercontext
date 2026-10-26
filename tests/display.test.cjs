@@ -17,3 +17,11 @@ test('unrecognized saved mode falls back to popup; invalid choices cannot change
  assert.equal(api.displayMode(),'popup');assert.throws(()=>api.setDisplayMode('invalid'));
  assert.equal(prefs.get('extensions.contextleaf.displayMode'),'invalid');
 });
+test('popup and sidebar widths are independent, bounded, and remembered after restart',async()=>{
+ const {api,prefs}=await load();assert.equal(api.displayWidth('popup'),340);assert.equal(api.displayWidth('sidebar'),360);
+ api.saveDisplayWidth('popup',480);api.saveDisplayWidth('sidebar',420);
+ const restarted=await load(Object.fromEntries(prefs));assert.equal(restarted.api.displayWidth('popup'),480);assert.equal(restarted.api.displayWidth('sidebar'),420);
+ restarted.api.saveDisplayWidth('popup',10);assert.equal(restarted.api.displayWidth('popup'),240);
+ restarted.api.saveDisplayWidth('sidebar',9999);assert.equal(restarted.api.displayWidth('sidebar'),720);
+ assert.throws(()=>api.saveDisplayWidth('bad',350));assert.throws(()=>api.saveDisplayWidth('popup',NaN));
+});

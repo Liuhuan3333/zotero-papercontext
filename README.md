@@ -14,7 +14,7 @@ Context-aware paper translation in Zotero. Built for beginners: choose a provide
 
 > API Key 由你选中的模型平台提供，调用可能收费，账号需已开通对应模型。业务空间专用接口等少数情况可能需要补充设置，见[配置说明](docs/CONFIGURATION.md)。
 
-[下载安装包](https://github.com/Liuhuan3333/zotero-papercontext/raw/refs/heads/main/dist/papercontext-0.3.0.xpi) · [配置说明](docs/CONFIGURATION.md) · [隐私与费用](docs/PRIVACY.md) · [MIT License](LICENSE)
+[下载安装包](https://github.com/Liuhuan3333/zotero-papercontext/raw/refs/heads/main/dist/papercontext-0.3.1.xpi) · [配置说明](docs/CONFIGURATION.md) · [隐私与费用](docs/PRIVACY.md) · [MIT License](LICENSE)
 
 ## 先看这四点
 
@@ -53,14 +53,14 @@ Context-aware paper translation in Zotero. Built for beginners: choose a provide
 
 ## 三分钟上手：不用写代码
 
-1. [下载 `papercontext-0.3.0.xpi`](https://github.com/Liuhuan3333/zotero-papercontext/raw/refs/heads/main/dist/papercontext-0.3.0.xpi)。在 GitHub 文件页中也可以点击下载原始文件。
+1. [下载 `papercontext-0.3.1.xpi`](https://github.com/Liuhuan3333/zotero-papercontext/raw/refs/heads/main/dist/papercontext-0.3.1.xpi)。在 GitHub 文件页中也可以点击下载原始文件。
 2. 在 Zotero 中打开 **工具 → 插件 → 齿轮 → 从文件安装插件**，选择 XPI 文件。
 3. 打开 **Zotero 设置 → 研译**，选择提供商，填写 API Key，点击“保存密钥”。
 4. 点击“检查连接”，然后打开 PDF，选中需要理解的文字。
 
 **不熟悉 API Key、安装入口或连接状态？** 请看[新手入门](docs/QUICKSTART.md)。
 
-浮窗右上角点击 **固定到侧边**，即可把当前译文放到阅读器右侧；继续划词会更新侧栏。点击 **返回浮窗** 即可切回。也可在设置中选择显示模式，重启后记住上次选择。切换本身不消耗额外 Token，进行中的请求也会继续完成。
+浮窗右上角点击 **固定到侧边**，即可把当前译文放到阅读器右侧；继续划词会更新侧栏。点击 **返回浮窗** 即可切回。拖动侧栏左边缘或浮窗右下角可以调整宽度；两种宽度分别记住，调整不调用 API。也可在设置中选择显示模式，重启后记住上次选择。切换本身不消耗额外 Token，进行中的请求也会继续完成。
 
 已有版本可直接覆盖安装，无需先卸载。插件保留既有配置、密钥和论文术语，不要求为了更新重新配置。
 
