@@ -23,6 +23,16 @@
  }
  function setup(state,sizing){
   state.sizing=sizing;const {doc}=state;
+  state.dismissTargets=new Set();
+  state.onOutside=event=>{
+   if(state.disposed || state.mode!=='popup' || !state.card.classList.contains('cl-floating') || state.cancelResize)return;
+   if(!state.card.contains(event.target))sizing.dismiss();
+  };
+  state.bindDismiss=()=>{
+   const targets=[doc,state.reader._window?.document,...doc.querySelectorAll('iframe')].map(target=>target?.contentDocument || target);
+   for(const target of targets){if(!target?.addEventListener || state.dismissTargets.has(target))continue;target.addEventListener('pointerdown',state.onOutside,true);state.dismissTargets.add(target);}
+  };
+  state.bindDismiss();doc.addEventListener('load',state.bindDismiss,true);
   const handle=doc.createElement('button');handle.type='button';handle.className='cl-resize';
   handle.setAttribute('aria-label','拖动调整翻译框宽度');handle.title='左右拖动调整宽度（自动记住）；方向键也可调整';
   state.resizeHandle=handle;state.card.append(handle);
@@ -60,10 +70,15 @@
   state.doc.body.classList.remove('contextleaf-docked');
  }
  function mount(state,mode,append){
+  // Reader rerenders must not reparent an already mounted independent card
+  // or interrupt the pointer capture of an active resize.
+  if(state.mode===mode && state.card.isConnected && (mode==='sidebar'?state.dock?.contains(state.card):state.card.classList.contains('cl-floating')))return;
   state.cancelResize?.();remember(state);
   const {doc,card}=state;
+  card.style.removeProperty('left');card.style.removeProperty('top');
   card.classList.remove('cl-floating');
   if(mode==='sidebar'){
+   state.forceFloating=false;
    if(!state.dock){state.dock=doc.createElement('aside');state.dock.className='contextleaf-dock';state.dock.setAttribute('aria-label','研译固定翻译框');doc.body.append(state.dock);}
    state.dock.append(card);doc.body.classList.add('contextleaf-docked');
   }else{
@@ -87,6 +102,11 @@
   state.modeButton.title='切换显示位置，保留当前译文，不重新调用 API';
   state.modeButton.setAttribute('aria-pressed',String(mode==='sidebar'));
  }
- function cleanup(state){state.cancelResize?.();state.doc.defaultView.removeEventListener('resize',state.onResize);clearDock(state);}
+ function cleanup(state){
+  state.cancelResize?.();state.doc.defaultView.removeEventListener('resize',state.onResize);
+  state.doc.removeEventListener('load',state.bindDismiss,true);
+  for(const target of state.dismissTargets || [])target.removeEventListener('pointerdown',state.onOutside,true);
+  state.dismissTargets?.clear();clearDock(state);
+ }
  root.ContextLeafDisplay={mount,cleanup,setup,applyWidth};
 })(typeof globalThis!=='undefined'?globalThis:this);

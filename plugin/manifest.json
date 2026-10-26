@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "研译 PaperContext",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "面向科研论文阅读的上下文划词翻译：论文术语表、术语纠正、按需上下文、多模型服务和本地缓存。",
   "author": "Liuhuan3333",
   "applications": {

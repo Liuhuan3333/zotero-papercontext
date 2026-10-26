@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.2
+
+- Clear floating position offsets when switching hosts so a resized result lands inside the fixed sidebar on the first click.
+- Dismiss independent floating results when clicking outside, including in the PDF viewer.
+- Keep mounted independent cards stable during reader rerenders and active resizing.
+
 ## 0.3.1
 
 - Drag the fixed sidebar left edge or popup bottom-right handle to resize.

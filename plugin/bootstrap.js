@@ -193,7 +193,7 @@ async function startup({id,rootURI}) {
       const actions=doc.createElement('div');actions.className='cl-actions';
       card.append(header,connection,source,output,meta,actions);
       state={reader,doc,card,modeButton,output,meta,connection,actions,identity,annotation,selection,signature,token:{cancelled:false},disposed:false};
-      D.setup(state,{width:mode=>this.displayWidth(mode),save:(mode,width)=>this.saveDisplayWidth(mode,width)});
+      D.setup(state,{dismiss:()=>this.dispose(state),width:mode=>this.displayWidth(mode),save:(mode,width)=>this.saveDisplayWidth(mode,width)});
       this.cards.set(reader,state);this.applyFont(state);this.updateConnection(state);
       actions.append(this.button(doc,'更多上下文重译',()=>this.run(state,true)),this.button(doc,'纠正术语',()=>this.editor(state)),this.button(doc,'论文术语表',()=>this.terms(state)));
       card.addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();this.dispose(state);}});
