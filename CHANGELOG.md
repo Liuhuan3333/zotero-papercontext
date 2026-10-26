@@ -1,4 +1,10 @@
-# 更新记录
+# Changelog
+
+## 0.3.0
+
+- Add popup/fixed-sidebar switching and remember the display mode across restarts.
+- Move the current result without another API request; keep pending translations and existing controls.
+- Reserve reader width for the fixed panel; update it on further selections.
 
 ## 0.2.1
 

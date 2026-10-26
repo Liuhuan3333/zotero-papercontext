@@ -7,6 +7,8 @@ async function startup({id,rootURI}) {
   Services.scriptloader.loadSubScript(rootURI+'core.js',this);
   Services.scriptloader.loadSubScript(rootURI+'reader-context.js',this);
   Services.scriptloader.loadSubScript(rootURI+'providers.js',this);
+  Services.scriptloader.loadSubScript(rootURI+'display.js',this);
+  const D=this.ContextLeafDisplay;
   const C=this.ContextLeafCore;
   const R=this.ContextLeafReaderContext;
   const P=this.ContextLeafProviders;
@@ -49,6 +51,12 @@ async function startup({id,rootURI}) {
       Zotero.Prefs.set('extensions.contextleaf.enabled',!!enabled,true);this.notify();
     },
     enabled() { return this.pref('enabled',true); },
+    displayMode() { return this.pref('displayMode','popup')==='sidebar'?'sidebar':'popup'; },
+    setDisplayMode(mode) {
+      if(!['popup','sidebar'].includes(mode))throw new Error('不支持的显示模式。');
+      for(const state of this.cards.values())D.mount(state,mode);
+      Zotero.Prefs.set('extensions.contextleaf.displayMode',mode,true);this.notify();
+    },
     fontSize() { return C.fontSize(this.pref('fontSize',16)); },
     applyFont(state) {
       const size=this.fontSize();state.card.style.setProperty('--cl-translation-font-size',size+'px');
@@ -143,7 +151,9 @@ async function startup({id,rootURI}) {
     },
     dispose(state) {
       state.disposed=true;state.token.cancelled=true;state.token.abort?.();
-      clearTimeout(state.timer);state.observer?.disconnect();state.card.remove();
+      clearTimeout(state.timer);state.observer?.disconnect();
+      state.doc.defaultView.removeEventListener('pagehide',state.onUnload);
+      D.cleanup(state);state.card.remove();
       if(this.cards.get(state.reader)===state)this.cards.delete(state.reader);
     },
     popup({reader,doc,params,append}) {
@@ -153,7 +163,7 @@ async function startup({id,rootURI}) {
       const identity=this.identity(reader);
       const signature=JSON.stringify([identity.paper,selection,annotation.position]);
       let state=this.cards.get(reader);
-      if(state && state.signature===signature && !state.disposed) { append(state.card);return; }
+      if(state && state.signature===signature && !state.disposed) { D.mount(state,this.displayMode(),this.displayMode()==='popup'?append:null);return; }
       if(state)this.dispose(state);
       this.addStyle(doc);
       const card=doc.createElement('div');card.className='contextleaf-root';card.lang='zh-CN';
@@ -163,20 +173,23 @@ async function startup({id,rootURI}) {
       const fontValue=doc.createElement('span');fontValue.className='cl-font-value';fontValue.title='当前译文字号（像素）';
       const larger=this.button(doc,'A＋',()=>this.changeFont(2));larger.className='cl-font-plus';larger.title='放大译文字号';larger.setAttribute('aria-label','放大译文字号');
       header.append(smaller,fontValue,larger);
+      const modeButton=this.button(doc,'固定到侧边',()=>this.setDisplayMode(state.mode==='sidebar'?'popup':'sidebar'));modeButton.className='cl-mode';header.append(modeButton);
       const settings=this.button(doc,'设置',()=>this.openSettings());header.append(settings);
       const close=this.button(doc,'×',()=>this.dispose(state));close.setAttribute('aria-label','关闭译文');header.append(close);
       const output=doc.createElement('div');output.className='cl-output';output.setAttribute('role','status');output.setAttribute('aria-live','polite');output.textContent='正在准备翻译…';
+      const source=doc.createElement('div');source.className='cl-source';source.textContent=selection;source.setAttribute('aria-label','选中的原文');
       const meta=doc.createElement('div');meta.className='cl-meta';
       const connection=this.button(doc,'',()=>this.openSettings());connection.className='cl-connection';
       const actions=doc.createElement('div');actions.className='cl-actions';
-      card.append(header,connection,output,meta,actions);
-      state={reader,doc,card,output,meta,connection,actions,identity,annotation,selection,signature,token:{cancelled:false},disposed:false};
+      card.append(header,connection,source,output,meta,actions);
+      state={reader,doc,card,modeButton,output,meta,connection,actions,identity,annotation,selection,signature,token:{cancelled:false},disposed:false};
       this.cards.set(reader,state);this.applyFont(state);this.updateConnection(state);
       actions.append(this.button(doc,'更多上下文重译',()=>this.run(state,true)),this.button(doc,'纠正术语',()=>this.editor(state)),this.button(doc,'论文术语表',()=>this.terms(state)));
       card.addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();this.dispose(state);}});
       // Native selection gestures should not consume typing/clicks inside the editor.
       card.addEventListener('pointerdown',e=>e.stopPropagation());
-      append(card);
+      D.mount(state,this.displayMode(),this.displayMode()==='popup'?append:null);
+      state.onUnload=()=>this.dispose(state);doc.defaultView.addEventListener('pagehide',state.onUnload,{once:true});
       state.observer=new (Zotero.getMainWindow().MutationObserver)(()=>{if(!card.isConnected)this.dispose(state);});
       state.observer.observe(doc.body,{childList:true,subtree:true});
       state.timer=setTimeout(()=>this.run(state,false),450);
@@ -255,7 +268,17 @@ async function startup({id,rootURI}) {
 .selection-popup .custom-sections:has(.contextleaf-root){flex-basis:100%;min-width:0;width:100%;}
 .contextleaf-root{box-sizing:border-box;width:340px;max-width:calc(100vw - 54px);padding:10px 5px 3px;font:13px/1.65 system-ui,sans-serif;color:var(--fill-primary,#202b34);white-space:normal;text-align:left;}
 .contextleaf-root *{box-sizing:border-box;}
-.contextleaf-root .cl-header{display:flex;align-items:center;gap:8px;margin-bottom:7px;border-bottom:1px solid #80808033;padding-bottom:6px;}
+.contextleaf-root .cl-header{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:7px;border-bottom:1px solid #80808033;padding-bottom:6px;}
+.contextleaf-root .cl-mode{font-size:11px;}
+.contextleaf-root .cl-source{display:none;}
+body.contextleaf-docked{--cl-dock-width:min(360px,45vw);}
+body.contextleaf-docked #split-view{inset-inline-end:var(--cl-dock-width);}
+.contextleaf-dock{position:fixed;inset-inline-end:0;top:41px;bottom:var(--bottom-placeholder-height,0px);width:var(--cl-dock-width);overflow:auto;background:var(--material-background,#fff);border-inline-start:1px solid #80808044;z-index:40;padding:10px;}
+.contextleaf-dock .contextleaf-root{width:100%;max-width:none;padding:0;}
+.contextleaf-dock .cl-source{display:block;font-size:12px;opacity:.7;max-height:16vh;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;border-bottom:1px solid #80808033;margin-bottom:10px;padding-bottom:8px;}
+.contextleaf-dock .cl-output{max-height:none;}
+.contextleaf-root.cl-floating{position:fixed;z-index:1000;max-height:80vh;overflow:auto;max-width:calc(100vw - 16px);padding:12px;border:1px solid #80808044;border-radius:8px;background:var(--material-background,#fff);box-shadow:0 4px 20px #0003;}
+@media print{.contextleaf-dock,.contextleaf-root.cl-floating{display:none;}body.contextleaf-docked #split-view{inset-inline-end:0;}}
 .contextleaf-root .cl-font-value{font-variant-numeric:tabular-nums;font-size:12px;min-width:16px;text-align:center;}
 .contextleaf-root button:disabled{opacity:.4;cursor:default;}
 .contextleaf-root .cl-header strong{flex:1;color:var(--accent-blue,#327b88);}

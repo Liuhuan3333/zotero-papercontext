@@ -8,6 +8,7 @@ var ContextLeafPreferences={
    const option=doc.createElementNS('http://www.w3.org/1999/xhtml','option');option.value=p.id;option.textContent=p.name;$('cl-provider').append(option);
   }
   const refresh=()=>{
+   $('cl-display-mode').value=api.displayMode();
    const c=api.connection();
    $('cl-provider-state').textContent=c.name+' · '+c.label;$('cl-connection-card').dataset.tone=c.tone;
    $('cl-current-model').textContent='当前模型：'+c.model;
@@ -21,6 +22,7 @@ var ContextLeafPreferences={
    $('cl-workspace-row').hidden=p.id!=='qwen';$('cl-enabled').checked=api.enabled();$('cl-api-key').value='';
    $('cl-provider-hint').textContent=p.hint;$('cl-provider-help').href=p.help;refresh();
   };
+  $('cl-display-mode').addEventListener('change',()=>{api.setDisplayMode($('cl-display-mode').value);status('显示模式已记住；切换不会重新调用 API。');});
   loadProvider();const unsubscribe=api.subscribe(refresh);win.addEventListener('unload',unsubscribe,{once:true});
   $('cl-provider-help').addEventListener('click',e=>{e.preventDefault();Zotero.launchURL(api.providerInfo().help);});
   $('cl-provider').addEventListener('change',()=>{api.setProvider($('cl-provider').value);loadProvider();status('已切换为 '+api.providerInfo().name+'；此操作不会调用 API。');});

@@ -3,6 +3,7 @@
 ## 文件结构
 
 - `plugin/bootstrap.js`：Zotero 生命周期、原生阅读器浮窗、凭据与状态、本机保存。
+- `plugin/display.js`：浮窗与固定侧栏挂载、宽度恢复和显示状态；不发送翻译请求。
 - `plugin/core.js`：上下文策略、术语、缓存键和响应处理；可独立测试。
 - `plugin/reader-context.js`：PDF 阅读器文字结构与选区适配。
 - `plugin/providers.js`：官方提供商预设、请求参数和状态判断。
